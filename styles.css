@@ -41,15 +41,58 @@ select {
     font-size: 1em;
 }
 
-.diet-content {
-    background: #f0f7ff;
-    border-left: 4px solid #3b7ddd;
-    padding: 16px 20px;
+/* Table styling */
+.diet-week-table {
+    margin-bottom: 32px;
+}
+.diet-week-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 24px 0;
+    background: #f8fafd;
     border-radius: 4px;
-    white-space: pre-wrap;
-    font-size: 1.05em;
+    overflow: hidden;
+}
+.diet-week-table th, .diet-week-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e4e9ef;
+    text-align: left;
+}
+.diet-week-table th {
+    background: #3b7ddd;
+    color: #fff;
+    font-weight: bold;
+}
+.diet-week-table tr:last-child td {
+    border-bottom: none;
 }
 
+/* Recipes styling */
+.recipes-section {
+    margin-top: 28px;
+}
+.recipe-card {
+    background: #f0f7ff;
+    box-shadow: 0 2px 8px #e2ecfa;
+    border-left: 4px solid #3b7ddd;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+.recipe-card h3 {
+    margin-top: 0;
+    color: #3b7ddd;
+}
+
+.error-msg {
+    color: #fff;
+    background: #dd3b3b;
+    padding: 18px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 32px;
+}
 footer {
     text-align: center;
     padding: 18px 0;
