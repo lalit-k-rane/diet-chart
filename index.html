@@ -19,7 +19,7 @@
                 <option value="week2">Week 2</option>
             </select>
         </div>
-        <pre id="planContent" class="diet-content">Loading...</pre>
+        <div id="planContent">Loading...</div>
     </main>
 
     <footer>
@@ -27,23 +27,79 @@
     </footer>
 
     <script>
+    function escapeHtml(text) {
+        return text.replace(/[<>&"]/g, function(c) {
+            return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];
+        });
+    }
+
+    function parseDietFileToHtml(text) {
+        // Split at RECIPES (case-insensitive)
+        const [chartBlockRaw, recipesBlockRaw] = text.split(/RECIPES/i);
+        // === DIET CHART TABLE ===
+        const mealLines = chartBlockRaw.split('\n').filter(
+            line => line.match(/:\s*/) && line.includes('(')
+        );
+        let tableRows = '';
+        mealLines.forEach(line => {
+            const match = line.match(/^(.+?):\s*(.+)\(([^)]+)\)$/);
+            if (match) {
+                tableRows += `<tr>
+                    <td>${escapeHtml(match[1])}</td>
+                    <td>${escapeHtml(match[3])}</td>
+                    <td>${escapeHtml(match[2].trim().replace(/,$/,'').replace(/\s+$/, ''))}</td>
+                </tr>`;
+            }
+        });
+        let tableHtml = `
+        <div class="diet-week-table">
+            <table>
+                <thead>
+                    <tr><th>Meal</th><th>Time</th><th>Menu</th></tr>
+                </thead>
+                <tbody>
+                ${tableRows}
+                </tbody>
+            </table>
+        </div>`;
+
+        // === RECIPES SECTION ===
+        let recipesHtml = '<div class="recipes-section"><h2>Recipes</h2>';
+        if (recipesBlockRaw) {
+            // Split by blank lines, then parse each recipe
+            recipesBlockRaw.trim().split(/\n\s*\n/).forEach(recipeBlk => {
+                if (!recipeBlk.trim()) return;
+                let lines = recipeBlk.trim().split("\n");
+                let title = lines[0] || "";
+                let ingredients = lines.find(line => line.toLowerCase().startsWith("ingredients:")) || "";
+                let instructions = lines.find(line => line.toLowerCase().startsWith("instructions:")) || "";
+                recipesHtml += `<div class="recipe-card">
+                    <h3>${escapeHtml(title)}</h3>
+                    <p><strong>${escapeHtml(ingredients)}</strong></p>
+                    <p><strong>${escapeHtml(instructions)}</strong></p>
+                </div>`;
+            });
+        }
+        recipesHtml += '</div>';
+
+        return tableHtml + recipesHtml;
+    }
+
     function loadWeek(week) {
-	alert(week+".txt");
         fetch(week + ".txt")
             .then(response => {
                 if (!response.ok) throw new Error("File not found.");
                 return response.text();
             })
             .then(data => {
-                document.getElementById("planContent").textContent = data;
+                document.getElementById("planContent").innerHTML = parseDietFileToHtml(data);
             })
             .catch(err => {
-			alert(err);
-                document.getElementById("planContent").textContent = "Sorry, diet plan not available for this week.";
+                document.getElementById("planContent").innerHTML = 
+                    '<div class="error-msg">Sorry, diet plan not available for this week.</div>';
             });
     }
     document.getElementById("weekSelector").addEventListener("change", function() {
-	alert(this.value);
         loadWeek(this.value);
     });
     // Initial load
