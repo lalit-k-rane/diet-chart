@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weekly Diet Plans</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Weekly Diet Plans</h1>
+    </header>
+
+    <main>
+        <div class="week-selector">
+            <label for="weekSelector">Select Week:</label>
+            <select id="weekSelector">
+                <option value="week1">Week 1</option>
+                <option value="week2">Week 2</option>
+            </select>
+        </div>
+        <pre id="planContent" class="diet-content">Loading...</pre>
+    </main>
+
+    <footer>
+        <p>Healthy Diet Plans &copy; 2025</p>
+    </footer>
+
+    <script>
+    function loadWeek(week) {
+	alert(week+".txt");
+        fetch(week + ".txt")
+            .then(response => {
+                if (!response.ok) throw new Error("File not found.");
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById("planContent").textContent = data;
+            })
+            .catch(err => {
+			alert(err);
+                document.getElementById("planContent").textContent = "Sorry, diet plan not available for this week.";
+            });
+    }
+    document.getElementById("weekSelector").addEventListener("change", function() {
+	alert(this.value);
+        loadWeek(this.value);
+    });
+    // Initial load
+    loadWeek(document.getElementById("weekSelector").value);
+    </script>
+</body>
+</html>
